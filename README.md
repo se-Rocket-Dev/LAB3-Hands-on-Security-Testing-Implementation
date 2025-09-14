@@ -210,21 +210,21 @@ Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 | Payload | ผลลัพธ์ | การป้องกัน |
 |---|---|---|
-| `admin'; --` |  | ○ ถูกบล็อก  ○ ผ่านได้ |
-| `' UNION SELECT * FROM Users; --` |  | ○ ถูกบล็อก  ○ ผ่านได้ |
-| `'; DROP TABLE Products; --` |  | ○ ถูกบล็อก  ○ ผ่านได้ |
+| `admin'; --` | ไม่สามารถ bypass login ได้ | [✅] ถูกบล็อก  [] ผ่านได้ |
+| `' UNION SELECT * FROM Users; --` | ไม่สามารถใช้ UNION Attack เพื่อดูข้อมูลได้ | [✅] ถูกบล็อก  [] ผ่านได้ |
+| `'; DROP TABLE Products; --` | ไม่สามารถลบตาราง products และใช้ comments | [✅] ถูกบล็อก  [] ผ่านได้ |
 
 ### วิธีการป้องกันที่สังเกตได้:
-- [ ] Input validation  
-- [ ] Prepared statements  
-- [ ] Error message ที่ไม่เปิดเผยรายละเอียด  
-- [ ] อื่นๆ: ____________
+- [✅] Input validation  
+- [✅] Prepared statements  
+- [✅] Error message ที่ไม่เปิดเผยรายละเอียด  
+- [✅] อื่นๆ: Maximum Length Restrictions, No Direct Query Construction และ Generic Error Messages
 
 ### วิเคราะห์และความคิดเห็น
 เปรียบเทียบกับ vulnerable version:
-- ความแตกต่างในการตรวจสอบ input  
-- วิธีการป้องกันที่มีประสิทธิภาพ  
-- ข้อเสนอแนะสำหรับการพัฒนาเพิ่มเติม  
+- มีการตรวจสอบหรือกำหนด input ให้ใส่ได้เฉพาะ input ที่กำหนดเท่านั้น 
+- ใช้ query ต่อกับพารามิเตอร์แทน การต่อ string โดยตรง เพื่อป้องกัน SQL injection, ไม่ใช้บัญชี sa หรือ root สำหรับ production
+- เพิ่ม Server-Side Validation Layer , Implement Web Application Firewall
 
 ---
 
@@ -241,22 +241,23 @@ Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 | Payload | ผลลัพธ์ที่แสดง | Script Execute หรือไม่ |
 |---|---|---|
-| `<script>alert('XSS')</script>` |  | ○ ใช่  ○ ไม่ |
-| `<img src=x onerror=alert('XSS')>` |  | ○ ใช่  ○ ไม่ |
-| `<svg onload=alert('XSS')>` |  | ○ ใช่  ○ ไม่ |
+| `<script>alert('XSS')</script>` | ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด  | [] ใช่  [✅] ไม่ |
+| `<img src=x onerror=alert('XSS')>` | ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด | [] ใช่  [✅] ไม่ |
+| `<svg onload=alert('XSS')>` |  | [ ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด ] ใช่  [✅] ไม่ |
 
 ### วิธีการป้องกันที่สังเกตได้:
-- [ ] HTML encoding  
-- [ ] Input sanitization  
-- [ ] Content validation  
-- [ ] CSP (Content Security Policy)  
-- [ ] อื่นๆ: ____________
+- [✅] HTML encoding  
+- [✅] Input sanitization  
+- [✅] Content validation  
+- [✅] CSP (Content Security Policy)  
+- [✅] อื่นๆ: Forbidden Word Filtering, Authentication Required, XSS Demo Payloads encode
 
 ### วิเคราะห์และความคิดเห็น
 การป้องกัน XSS ที่มีประสิทธิภาพ:
-- วิธีการ encoding ที่ใช้  
-- ผลต่างจาก vulnerable version  
-- ความปลอดภัยของผู้ใช้งานโดยรวม  
+- HTML Encoding ของ input  
+- ทุก input ถูก HTML encode ก่อน render, มี sanitization + forbidden word filter, จำกัดความยาวข้อความ comment และ แสดงผลโดย escape code แทนที่จะรัน script 
+- Vulnerable: โจมตี XSS ผ่าน comment ผู้ใช้ที่เปิดหน้าเว็บอาจโดนขโมย cookie/session
+Secure: มี HTML encoding + sanitization โค้ดอันตรายจะถูกแสดงเป็น text ไม่รันจริง
 
 ---
 
@@ -274,15 +275,15 @@ Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 | User Account | Target User ID | สามารถเข้าถึงได้ | Error Message |
 |---|---:|---|---|
-| john (user) | 1 | ○ ใช่  ○ ไม่ |  |
-| john (user) | 3 | ○ ใช่  ○ ไม่ |  |
-| admin | 2 | ○ ใช่  ○ ไม่ |  |
+| john (user) | 1 | ○ ใช่  [✅] ไม่ | ไม่มีเพราะถูกล็อกให้ดูได้แค่ Target User ID ที่ 2 |
+| john (user) | 3 | ○ ใช่  [✅] ไม่ | ไม่มีเพราะถูกล็อกให้ดูได้แค่ Target User ID ที่ 2 |
+| admin | 2 | [✅] ใช่  ○ ไม่ | ไม่มี เพราะเป็น admin สามารถดูและตรวจสอบได้หมด|
 
 ### วิธีการป้องกันที่สังเกตได้:
-- [ ] JWT token validation  
-- [ ] Authorization checks  
-- [ ] Role-based access control  
-- [ ] อื่นๆ: ____________
+- [✅] JWT token validation  
+- [✅] Authorization checks  
+- [✅] Role-based access control  
+- [✅] อื่นๆ: ____________
 
 ### วิเคราะห์และความคิดเห็น
 ประสิทธิภาพของมาตรการป้องกัน IDOR:
@@ -497,9 +498,9 @@ Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 # Part 2: การทดสอบ Secure Version
 
-![Test Case 2.1: SQL Injection Protection](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
-![Test Case 2.2: XSS Protection](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
-![Test Case 2.3: IDOR Protection1](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+![Test Case 2.1: SQL Injection Protection](<img width="1453" height="735" alt="image" src="https://github.com/user-attachments/assets/93d0c547-d649-411c-aa4a-88b55571e121" />)
+![Test Case 2.2: XSS Protection](<img width="1642" height="650" alt="image" src="https://github.com/user-attachments/assets/1a6aea35-788e-47d2-9e69-94e9c5d41ca3" />)
+![Test Case 2.3: IDOR Protection1](<img width="1499" height="780" alt="image" src="https://github.com/user-attachments/assets/89d2c359-70a0-4e95-8344-0c138b4dd3db" />)
 
 ---
 
@@ -528,6 +529,7 @@ const [rows] = await db.execute(
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [ระบุแหล่งที่มา]
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
 
 
