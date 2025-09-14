@@ -1,3 +1,4 @@
+
 # LAB3: เอกสารคู่มือการทดสอบความปลอดภัยเว็บแอปพลิเคชัน
 
 ## Security Testing Guide & Report Template
@@ -62,7 +63,8 @@ Team: กลุ่ม 6
 
 
 **หลักฐาน (Screenshots):**
-แนบไฟล์รูป: `![](https://github.com/user-attachments/assets/bcb97730-8a85-436e-8c75-336280e1f228)
+แนบไฟล์รูป:
+![](https://github.com/user-attachments/assets/bcb97730-8a85-436e-8c75-336280e1f228)
 
 ### วิเคราะห์และความคิดเห็น
 - **สาเหตุ:** ระบบนำค่า input ไปต่อเป็นสตริง SQL ตรง ๆ ทำให้ `--` ทำให้ทุก query ที่ต่อจาก -- นับเป็น comments ระบบจึงข้ามการตรวจสอบบัญชี
@@ -94,7 +96,8 @@ Team: กลุ่ม 6
 - ไม่ได้รับเพราะทำไม่เสร็จ
 
 **หลักฐาน (Screenshots):**
-แนบไฟล์รูป: `![](https://github.com/user-attachments/assets/af2085a9-88e4-4659-bfca-ef2baa3775a6)
+แนบไฟล์รูป:
+![](https://github.com/user-attachments/assets/af2085a9-88e4-4659-bfca-ef2baa3775a6)
 
 ### วิเคราะห์และความคิดเห็น
 - **สาเหตุ:** ถ้า Query ไม่ผูกพารามิเตอร์ `UNION` จะสามารถรวมข้อมูลจากตาราง `Users` ออกมาได้
@@ -166,27 +169,9 @@ Team: กลุ่ม 6
 
 | User ID | ข้อมูลที่แสดง | สามารถเข้าถึงได้ |
 |--------:|----------------|------------------|
-| 1 | User Profile:
-ID: 1
-Username: admin
-Email: admin@example.com
-Password: admin123
-Role: admin
-Created: 9/13/2025 | [✅] ใช่  [] ไม่ |
-| 2 | User Profile:
-ID: 2
-Username: john
-Email: john@example.com
-Password: password
-Role: user
-Created: 9/13/2025 | [✅] ใช่  [] ไม่ |
-| 3 |User Profile:
-ID: 3
-Username: jane
-Email: jane@example.com
-Password: qwerty
-Role: user
-Created: 9/13/2025| [✅] ใช่  [] ไม่ |
+| 1 | User Profile:\nID: 1\nUsername: admin\nEmail: admin@example.com\nPassword: admin123\nRole: admin\nCreated: 9/13/2025 | [✅] ใช่  [] ไม่ |
+| 2 | User Profile:\nID: 2\nUsername: john\nEmail: john@example.com\nPassword: password\nRole: user\nCreated: 9/13/2025 | [✅] ใช่  [] ไม่ |
+| 3 | User Profile:\nID: 3\nUsername: jane\nEmail: jane@example.com\nPassword: qwerty\nRole: user\nCreated: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 ### วิเคราะห์และความคิดเห็น
 วิเคราะห์ที่มาของปัญหา IDOR:
@@ -243,7 +228,7 @@ Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 |---|---|---|
 | `<script>alert('XSS')</script>` | ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด  | [] ใช่  [✅] ไม่ |
 | `<img src=x onerror=alert('XSS')>` | ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด | [] ใช่  [✅] ไม่ |
-| `<svg onload=alert('XSS')>` |  | [ ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด ] ใช่  [✅] ไม่ |
+| `<svg onload=alert('XSS')>` |  ไม่ผ่านการเขียน comments ตามรูปแบบที่กำหนด | [] ใช่  [✅] ไม่ |
 
 ### วิธีการป้องกันที่สังเกตได้:
 - [✅] HTML encoding
@@ -511,7 +496,6 @@ Secure: มี HTML encoding + sanitization โค้ดอันตรายจ
 
 
 
-
 ### B. Code Snippets ที่สำคัญ
 (แนบโค้ดส่วนที่เกี่ยวกับการป้องกัน/ช่องโหว่ที่พบ)
 
@@ -574,7 +558,6 @@ app.get('/user/:id', authenticateJWT, async (req, res) => {
   const [rows] = await db.execute('SELECT * FROM Users WHERE id = ?', [requestedId]);
   res.json(rows[0]);
 });
-
 ```
 
 ### C. เอกสารอ้างอิง
@@ -582,17 +565,4 @@ app.get('/user/:id', authenticateJWT, async (req, res) => {
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [Lab 3 Readme.md](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
-
-
-
-
-
-
-
-
-
-
-
-
-
 
