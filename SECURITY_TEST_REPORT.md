@@ -19,7 +19,7 @@
 **จากหัวข้อ Test 1.3.1: Cookie Stealing Simulation**  
 ![Test 1.3.1: Cookie Stealing Simulation](https://github.com/user-attachments/assets/cad42a5f-cb86-40c9-a6d2-2b2661f1468a)
 
-**จากหัวข้อ Test 1.3.2: DOM Manipulation (IMG onerror)**  
+**จากหัวข้อ Test 1.3.2: DOM Manipulation**  
 ![Test 1.3.2: DOM Manipulation](https://github.com/user-attachments/assets/c1ea4550-79cf-42e2-8e8a-52c9750c8f98)
 
 **จากหัวข้อ Test Case 1.4: Insecure Direct Object Reference (IDOR)**  
