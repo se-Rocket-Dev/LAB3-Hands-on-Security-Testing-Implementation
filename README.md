@@ -57,22 +57,17 @@ Team: กลุ่ม 6
 
 | ผลลัพธ์ที่คาดหวัง                                 | ผลลัพธ์จริง (สรุป) | สถานะ |
 |----------------------------------------------------|---------------------|-------|
-| ระบบอนุญาตให้ Login ได้โดยไม่ตรวจสอบรหัสผ่าน      |  ระบบ bypass login เพราะว่ามี -- หลัง admin ทำให้ทุก query ที่อยู่หลัง -- ไป จะถูกมองข้ามเพราะเห็นเป็น comments จึงข้ามการตรวจสอบบัญชีไป       |   - ✅ สำเร็จ  
-- [ ] ล้มเหลว     |
+| ระบบอนุญาตให้ Login ได้โดยไม่ตรวจสอบรหัสผ่าน      |  ระบบ bypass login เพราะว่ามี -- หลัง admin ทำให้ทุก query ที่อยู่หลัง -- ไป จะถูกมองข้ามเพราะเห็นเป็น comments จึงข้ามการตรวจสอบบัญชีไป       | [✅] สำเร็จ [] ล้มเหลว |
 
 
 
 **หลักฐาน (Screenshots):**  
-แนบไฟล์รูป: `docs/screenshots/tc1-1.png`  
-ตัวอย่างการแทรกรูปใน Markdown:  
-```md
-![Login Bypass Evidence](docs/screenshots/tc1-1.png)
-```
+แนบไฟล์รูป: `<img width="1208" height="522" alt="image" src="https://github.com/user-attachments/assets/bcb97730-8a85-436e-8c75-336280e1f228" />
 
 ### วิเคราะห์และความคิดเห็น
-- **สาเหตุ:** ระบบนำค่า input ไปประกอบเป็นสตริง SQL ตรง ๆ ทำให้ `--` คอมเมนต์ส่วนเงื่อนไขรหัสผ่านออกไป
+- **สาเหตุ:** ระบบนำค่า input ไปต่อเป็นสตริง SQL ตรง ๆ ทำให้ `--` ทำให้ทุก query ที่ต่อจาก -- นับเป็น comments ระบบจึงข้ามการตรวจสอบบัญชี
 - **ผลกระทบ:** ผู้โจมตีข้ามการตรวจสอบรหัสผ่าน เข้าสู่ระบบในนามผู้ใช้ `admin` ได้
-- **แนวทางป้องกัน:** ใช้ **Prepared Statements / Parameterized Queries**, ตรวจสอบ input แบบ allow‑list, จำกัดสิทธิ์ DB (Least Privilege), ปิด error detail
+- **แนวทางป้องกัน:** ใช้ **Prepared Statements / Parameterized Queries**, ตรวจสอบ input แบบ allow‑list, จำกัดสิทธิ์ Database
 
 ---
 
@@ -93,41 +88,19 @@ Team: กลุ่ม 6
 
 | ผลลัพธ์ที่คาดหวัง                        | ผลลัพธ์จริง (สรุป) | สถานะ |
 |-------------------------------------------|---------------------|-------|
-| แสดงข้อมูลผู้ใช้ (เช่น username/password) |                     |       |
-
-- [ ] สำเร็จ  
-- [ ] ล้มเหลว  
+| แสดงข้อมูลผู้ใช้ (เช่น username/password) |            UNION attack ไม่สำเร็จ เพราะจำนวน column ของ UNION ไม่เท่ากันกับ column ของ Users       | [] สำเร็จ [✅] ล้มเหลว |
 
 **ข้อมูลที่ได้รับ (ถ้ามี):**
-- ชื่อผู้ใช้:  
-- รหัสผ่าน:  
-- อื่น ๆ:  
+- ไม่ได้รับเพราะทำไม่เสร็จ
 
 **หลักฐาน (Screenshots):**  
-แนบไฟล์รูป: `docs/screenshots/tc1-2.png`  
-ตัวอย่างการแทรกรูปใน Markdown:  
-```md
-![Union Data Extraction Evidence](docs/screenshots/tc1-2.png)
-```
+แนบไฟล์รูป: `<img width="1231" height="405" alt="image" src="https://github.com/user-attachments/assets/af2085a9-88e4-4659-bfca-ef2baa3775a6" />
 
 ### วิเคราะห์และความคิดเห็น
-- **สาเหตุ:** Query ไม่ผูกพารามิเตอร์ ทำให้ใช้ `UNION` รวมผลลัพธ์จากตาราง `Users` ได้
-- **ผลกระทบ:** รั่วไหลข้อมูลอ่อนไหวของผู้ใช้ และนำไปสู่การโจมตีขั้นต่อไปได้
-- **แนวทางป้องกัน:** ใช้ **Prepared Statements**, validate/normalize input, จำกัดสิทธิ์ DB, ปิด error detail, เพิ่ม automated tests + SAST/DAST
+- **สาเหตุ:** ถ้า Query ไม่ผูกพารามิเตอร์ `UNION` จะสามารถรวมข้อมูลจากตาราง `Users` ออกมาได้
+- **ผลกระทบ:** ข้อมูลของผู้ใช้เสี่ยงต่อการรั่วไหล และสามารถโจมตีครั้งต่อๆไปได้อีก
+- **แนวทางป้องกัน:** ใช้ **Prepared Statements**, validate/normalize input, จำกัดสิทธิ์ Database
 
----
-
-## ภาคผนวก: ข้อควรปฏิบัติด้านความปลอดภัย (สรุปย่อ)
-- ใช้ **Parameterized Queries** ทุกกรณี แทนการต่อสตริง SQL
-- ทำ **Input Validation** แบบ allow‑list และ escape เมื่อจำเป็น
-- ออกแบบ **Least Privilege** ให้กับบัญชีฐานข้อมูลที่แอปใช้งาน
-- จัดการ error message ให้เป็นมิตรต่อผู้ใช้แต่ไม่เปิดเผยโครงสร้างภายใน
-- เพิ่ม test สำหรับ payload ที่พบบ่อย และตั้ง CI ให้สแกนด้วย SAST/DAST อย่างสม่ำเสมอ
-
----
-
-## เวอร์ชันของเอกสาร
-- วันที่ปรับปรุงล่าสุด: 2025-09-14
 ---
 
 ## Test Case 1.3: Cross-Site Scripting (XSS)
@@ -148,10 +121,7 @@ Team: กลุ่ม 6
 
 | ผลลัพธ์ที่คาดหวัง                    | ผลลัพธ์จริง (สรุป) | สถานะ |
 |--------------------------------------|---------------------|-------|
-| JavaScript execute และแสดง alert     |                     |       |
-
-- [ ] สำเร็จ  
-- [ ] ล้มเหลว
+| JavaScript execute และแสดง alert     | ไม่มี aleart XSS Attack! เกิดขึ้น | [] สำเร็จ [✅] ล้มเหลว |
 
 ---
 
@@ -162,24 +132,23 @@ Team: กลุ่ม 6
   ```html
   <script>alert('cookie: ' + document.cookie);</script>
   ```
-- ผลลัพธ์: _____________________________
+- ผลลัพธ์: ไม่ผ่านเพราะ frontend render comment เป็น plain text
 
 **Test 1.3.2: DOM Manipulation**
 - Payload:
   ```html
   <img src=x onerror="alert('XSS via IMG tag')">
   ```
-- ผลลัพธ์: _____________________________
+- ผลลัพธ์: ไม่ผ่านเพราะ frontend render comment เป็น plain text เหมือนกับข้อ 1.3 และ 1.3.1
 
 ---
 
 ### วิเคราะห์และความคิดเห็น
 
 วิเคราะห์ความเสี่ยงจาก XSS:
-- ความเสี่ยงจากการโจรกรรม session/cookie
-- การ redirect ไปเว็บอันตราย
-- การแก้ไขหน้าจอ/ DOM ของเว็บเพจ
-- ผลกระทบต่อผู้ใช้งานในระบบ
+- มีความเสี่ยงว่าจะถูกขโมย session/cookie
+- การ redirect เข้าไปเว็บที่เสี่ยงและอันตรายต่อเรา
+  
 ---
 
 ## Test Case 1.4: Insecure Direct Object Reference (IDOR)
@@ -197,15 +166,32 @@ Team: กลุ่ม 6
 
 | User ID | ข้อมูลที่แสดง | สามารถเข้าถึงได้ |
 |--------:|----------------|------------------|
-| 1 |  | ○ ใช่  ○ ไม่ |
-| 2 |  | ○ ใช่  ○ ไม่ |
-| 3 |  | ○ ใช่  ○ ไม่ |
+| 1 | User Profile:
+ID: 1
+Username: admin
+Email: admin@example.com
+Password: admin123
+Role: admin
+Created: 9/13/2025 | [✅] ใช่  [] ไม่ |
+| 2 | User Profile:
+ID: 2
+Username: john
+Email: john@example.com
+Password: password
+Role: user
+Created: 9/13/2025 | [✅] ใช่  [] ไม่ |
+| 3 |User Profile:
+ID: 3
+Username: jane
+Email: jane@example.com
+Password: qwerty
+Role: user
+Created: 9/13/2025| [✅] ใช่  [] ไม่ |
 
 ### วิเคราะห์และความคิดเห็น
 วิเคราะห์ที่มาของปัญหา IDOR:
-- ข้อมูลที่ผู้ใช้ไม่ควรเห็นแต่กลับเข้าถึงได้  
-- ความสอดคล้อง/ความเป็นเจ้าของในแต่ละกรณี  
-- วิธีการที่ใช้ป้องกันไม่ให้ข้อมูลรั่วไหลในอนาคต  
+- ข้อมูลที่ผู้ใช้ไม่ควรเห็นแต่มันดันเข้าถึงได้ซะงั้น
+- เป็นวิธีการที่เข้าถึงข้อมูลที่ไม่ควรมีสิทธิ์ดูได้โดยการเปลี่ยนหมายเลขอ้างอิง เช่น user ID, invoice number, หรือ file name โดยที่ระบบไม่มีการตรวจสอบสิทธิ์ให้เหมาะสม    
 
 ---
 
@@ -498,12 +484,32 @@ Team: กลุ่ม 6
 ### A. Screenshots หลักฐาน
 (แนบ screenshots ของการทดสอบในแต่ละขั้นตอน)  
 ตัวอย่างการแทรกภาพ:
-```md
-![TC1.1](docs/screenshots/tc1-1.png)
-![TC1.2](docs/screenshots/tc1-2.png)
-![TC1.3](docs/screenshots/tc1-3.png)
 ```
-> โปรดสร้างโฟลเดอร์ `docs/screenshots/` และใส่ไฟล์ภาพตามชื่อที่อ้างอิง
+# Part 1: การทดสอบ Vulnerable Version
+![Test Case 1.1: SQL Injection - Login Bypass](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+![Test Case 1.2: SQL Injection - Data Extraction](<img width="1262" height="420" alt="image" src="https://github.com/user-attachments/assets/e0697426-9adc-4083-8322-f88b95c77765" />)
+![Test Case 1.3: Cross-Site Scripting (XSS)](<img width="1902" height="676" alt="image" src="https://github.com/user-attachments/assets/4b00838f-6b16-4923-8eb7-0783032df4e8" />)
+![Test 1.3.1: Cookie Stealing Simulation](<img width="1902" height="458" alt="image" src="https://github.com/user-attachments/assets/cad42a5f-cb86-40c9-a6d2-2b2661f1468a" />)
+![Test 1.3.2: DOM Manipulation](<img width="1890" height="494" alt="image" src="https://github.com/user-attachments/assets/c1ea4550-79cf-42e2-8e8a-52c9750c8f98" />)
+![Test Case 1.4: Insecure Direct Object Reference (IDOR)](<img width="1378" height="567" alt="image" src="https://github.com/user-attachments/assets/ed397b0a-7e55-4d62-8821-b0664b5a1504" />)
+
+---
+
+# Part 2: การทดสอบ Secure Version
+
+![Test Case 2.1: SQL Injection Protection](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+![Test Case 2.2: XSS Protection](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+![Test Case 2.3: IDOR Protection1](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+
+---
+
+# Part 3: การทดสอบความปลอดภัยเพิ่มเติม
+
+![Test Case 3.1: Rate Limiting](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+![Test Case 3.2: Authentication & Authorization](<img width="1211" height="523" alt="image" src="https://github.com/user-attachments/assets/dcca3511-edbc-41fb-98fb-b21281754b75" />)
+
+```
+
 
 ### B. Code Snippets ที่สำคัญ
 (แนบโค้ดส่วนที่เกี่ยวกับการป้องกัน/ช่องโหว่ที่พบ)
@@ -521,6 +527,8 @@ const [rows] = await db.execute(
 - OWASP Top 10: https://owasp.org/Top10/
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [ระบุแหล่งที่มา]
+- IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
 
 
