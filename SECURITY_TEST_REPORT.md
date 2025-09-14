@@ -1,5 +1,43 @@
 # Security Testing Report (with Captions)
 
+
+## สรุปผลการทดลองแบบตาราง (ตามหัวข้อใน ref)
+
+### 1) SQL Injection
+| รายการทดสอบ | Vulnerable | Secure | หมายเหตุ |
+|---|---|---|---|
+| Login bypass ด้วย `admin'; --` | ✅ ทำได้ | ✅ ถูกบล็อก | ดูภาพ Appendix A → Test Case 1.1 |
+| UNION data extraction | ⛔ ไม่สำเร็จ (คอลัมน์ไม่ตรง) | ✅ ถูกบล็อก | Appendix A → Test Case 1.2 |
+| Error handling เผยข้อมูล | ⚠️ มีบอกใบ้บางส่วน | ✅ ใช้ข้อความ generic | ลดโอกาสเปิดเผย schema |
+
+### 2) XSS
+| รายการทดสอบ | Vulnerable | Secure | หมายเหตุ |
+|---|---|---|---|
+| `<script>alert(...)</script>` | ⛔ ไม่ execute (render เป็นข้อความ) | ✅ ถูก encode/sanitize | Appendix A → Test Case 1.3 / 2.2 |
+| `<img src=x onerror=...>` | ⛔ ไม่ execute | ✅ ถูก encode/sanitize | Appendix A → Test 1.3.2 |
+| นโยบายเสริม (CSP ฯลฯ) | – | ✅ มีใช้งาน | ลดความเสี่ยง DOM-based XSS |
+
+### 3) IDOR
+| รายการทดสอบ | Vulnerable | Secure | หมายเหตุ |
+|---|---|---|---|
+| เปลี่ยน `User ID` เพื่อดูโปรไฟล์ผู้อื่น | ✅ ทำได้ | ✅ ถูกบล็อก (ยกเว้น admin) | Appendix A → Test Case 1.4 / 2.3 |
+| ตรวจสิทธิ์เชิงวัตถุ (Object-level) | ❌ ไม่มี | ✅ มี (JWT + RBAC) | เช็ค `userId/role` กับทรัพยากร |
+
+### 4) Rate Limiting
+| รายการทดสอบ | ผลลัพธ์ | หมายเหตุ |
+|---|---|---|
+| ยิงคำขอซ้ำ ๆ (login/api) | ✅ บล็อคที่ครั้งที่ 6 | 5 ครั้งแรก 401, ครั้งที่ 6 โดน rate limit (Appendix A → 3.1) |
+
+### 5) Authentication & Authorization
+| การทดสอบ | ผลลัพธ์ | HTTP Status | หมายเหตุ |
+|---|---|---|---|
+| No token → POST `/comments` | ✅ ถูกบล็อก | 405 | ไม่อนุญาตโดยไม่มีโทเค็น |
+| Invalid token → GET `/user/1` | ✅ ถูกบล็อก | 404 | ไม่อนุญาต/ไม่เปิดเผยรายละเอียด |
+| Expired token → `/admin/users` | ✅ ถูกบล็อก | 405 | ต้อง login ใหม่ |
+
+> อ้างอิงภาพประกอบ: ดู **Appendix A** ด้านล่าง (เพิ่ม title กำกับไว้เหนือภาพแล้ว)
+
+
 ## ภาคผนวก A: Screenshots หลักฐาน
 (เพิ่ม **title** กำกับเหนือภาพเพื่อระบุว่าเป็นภาพจากหัวข้อใด)
 
@@ -19,7 +57,7 @@
 **จากหัวข้อ Test 1.3.1: Cookie Stealing Simulation**  
 ![Test 1.3.1: Cookie Stealing Simulation](https://github.com/user-attachments/assets/cad42a5f-cb86-40c9-a6d2-2b2661f1468a)
 
-**จากหัวข้อ Test 1.3.2: DOM Manipulation**  
+**จากหัวข้อ Test 1.3.2: DOM Manipulation (IMG onerror)**  
 ![Test 1.3.2: DOM Manipulation](https://github.com/user-attachments/assets/c1ea4550-79cf-42e2-8e8a-52c9750c8f98)
 
 **จากหัวข้อ Test Case 1.4: Insecure Direct Object Reference (IDOR)**  
@@ -51,3 +89,6 @@
 ---
 
 _Updated: 2025-09-14 21:58 (ICT)_
+
+
+_Last updated: 2025-09-14 22:02 (ICT)_
