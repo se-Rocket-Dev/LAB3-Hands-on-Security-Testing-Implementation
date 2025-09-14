@@ -516,18 +516,73 @@ Secure: มี HTML encoding + sanitization โค้ดอันตรายจ
 (แนบโค้ดส่วนที่เกี่ยวกับการป้องกัน/ช่องโหว่ที่พบ)
 
 ตัวอย่างบล็อกโค้ด (Prepared Statement):
+# 1. ช่องโหว่ SQL Injection (Vulnerable Version)
+```
+//ปลอดภัยกว่า
+const query = `SELECT * FROM Users WHERE username='${username}' AND password='${password}'`;
+const result = await sql.query(query);
+
 ```
 
-1. ช่องโหว่ SQL Injection (Vulnerable Version)
+# 2. การป้องกัน SQL Injection ด้วย Prepared Statement (Secure Version)
+```
+//ปลอดภัย
+const [rows] = await db.execute(
+  'SELECT * FROM Users WHERE username = ? AND password = ?',
+  [username, hashedPassword]
+);
 
+if (rows.length > 0) {
+  // Login success
+} else {
+  // Invalid credentials
+}
+
+```
+
+# 3. การป้องกัน SQL Injection ด้วย Prepared Statement (Secure Version)
+```
+//ไม่ปลอดภัย
+const query = `INSERT INTO Comments (user_id, content) VALUES (${userId}, '${content}')`;
+await sql.query(query);
+```
+
+# 4. การป้องกัน XSS (Secure Version)
+```
+// ปลอดภัยกว่า
+const sanitizedContent = sanitizeHtml(content, {
+  allowedTags: [], // หรือ allow-list ที่ต้องการ
+  allowedAttributes: {}
+});
+await db.execute(
+  'INSERT INTO Comments (user_id, content) VALUES (?, ?)',
+  [userId, sanitizedContent]
+);
+```
+
+# 5. การป้องกัน IDOR ด้วย JWT + Role Check (Secure Version)
+```
+// ปลอดภัย
+app.get('/user/:id', authenticateJWT, async (req, res) => {
+  const requestedId = parseInt(req.params.id, 10);
+  const currentUser = req.user; // ข้อมูลจาก JWT
+
+  if (currentUser.role !== 'admin' && currentUser.id !== requestedId) {
+    return res.status(403).json({ error: 'Access denied' });
+  }
+
+  const [rows] = await db.execute('SELECT * FROM Users WHERE id = ?', [requestedId]);
+  res.json(rows[0]);
+});
 
 ```
 
 ### C. เอกสารอ้างอิง
 - OWASP Top 10: https://owasp.org/Top10/
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
-- Lab Materials: [ระบุแหล่งที่มา]
+- Lab Materials: [[Lab 3 Readme.md]](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
 
 
