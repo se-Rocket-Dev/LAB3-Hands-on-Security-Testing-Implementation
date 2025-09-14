@@ -580,7 +580,7 @@ app.get('/user/:id', authenticateJWT, async (req, res) => {
 ### C. เอกสารอ้างอิง
 - OWASP Top 10: https://owasp.org/Top10/
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
-- Lab Materials: [[Lab 3 Readme.md]](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
+- Lab Materials: [Lab 3 Readme.md](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
 
 
