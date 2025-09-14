@@ -283,13 +283,13 @@ Secure: มี HTML encoding + sanitization โค้ดอันตรายจ
 - [✅] JWT token validation  
 - [✅] Authorization checks  
 - [✅] Role-based access control  
-- [✅] อื่นๆ: ____________
+- [✅] อื่นๆ: Input validation บน user ID
 
 ### วิเคราะห์และความคิดเห็น
 ประสิทธิภาพของมาตรการป้องกัน IDOR:
-- ความแตกต่างระหว่าง user และ admin  
-- ความเหมาะสมของ error messages  
-- ระดับความปลอดภัยที่ได้รับ  
+- user ถูกจำกัดสิทธิ์ให้ดูข้อมูลที่อนุญาตเท่านั้น ส่วน admin มีสิทธิ์ทั้งหมด สามารถตรวจสอบได้ทุกคน 
+- มีการแจ้งเตือนข้อมูลชัดเจน , เข้าใจง่ายไม่ซับซ้อน
+- ระดับความปลอดภัยที่ได้รับ : ใช้ JWT + role-based check ทำให้มีความเสี่ยงต่ำเพราะมีการจำกัดสิทธิ์ผู้ใช้งาน
 
 ---
 
@@ -529,6 +529,7 @@ const [rows] = await db.execute(
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [ระบุแหล่งที่มา]
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
 
 
