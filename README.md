@@ -12,7 +12,9 @@ Team: กลุ่ม 6
 รหัสนักศึกษา: 66543210033-7
 
 วันที่ทดสอบ: 14/09/2025
-เวลาที่ใช้: 3 วัน
+เวลาที่ใช้: ใช้เวลาทำ 3 วัน ทำทดสอบ 1 วัน, ทำรายงาน 2 วัน
+
+---
 
 การเตรียมความพร้อม (Pre-Testing Checklist)
 
@@ -565,4 +567,5 @@ app.get('/user/:id', authenticateJWT, async (req, res) => {
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [Lab 3 Readme.md](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
