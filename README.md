@@ -467,6 +467,26 @@ Secure: มี HTML encoding + sanitization โค้ดอันตรายจ
 
 ---
 
+## คำถามท้ายบท
+1) ความแตกต่างระหว่าง Prepared Statement กับ String Concatenation
+   - String Concatenation (ต่อสตริง) เอาค่า input ของผู้ใช้ไปต่อเป็นคำสั่ง SQL ตรงๆ ส่วน Prepared Statement ใช้ placeholder (?, $1, @p1 ฯลฯ) แล้วให้ driver/database ทำการ bind ค่าให้ถูกชนิด/escape ให้เอง
+2) ทำไม HTML Encoding ถึงป้องกัน XSS ได้?
+   - HTML Encoding จะเปลี่ยนตัวอักษรพิเศษให้กลายเป็นตัวอักษรธรรมดา ที่เบราว์เซอร์ไม่ตีความเป็นแท็ก/สคริปต์
+     ตัวอย่าง เช่น เปลี่ยน <script>alert(1)</script> ให้เป็น &lt;script&gt;alert(1)&lt;/script&gt;
+3) JWT Token ป้องกัน IDOR ได้อย่างไร?
+   - JWT เป็นเหมือนบัตรผ่านบอกตัวตน (มี userId/role) ที่เซิร์ฟเวอร์ใช้ตัดสินใจทุกครั้ง
+   - เซิร์ฟเวอร์ตรวจลายเซ็นและวันหมดอายุ ของ JWT ก่อนเชื่อถือ เพื่อกันการปลอม/แก้ไข
+   - เช็คสิทธิ์ว่าตรงกับของที่ request ไหม ถ้า request /user/123 มา แต่ userId ใน JWT ไม่ใช่ 123 และก็ role ไม่ตรงกับที่ขอ มันจะตอบว่าเป็น 403 หรือ Forbidden ทันที ทำให้ป้องกัน IDOR ได้
+4) Rate Limiting ช่วยป้องกันการโจมตีแบบไหน?
+   - Brute Force / Credential Stuffing: เดารหัสผ่าน/ยัดบัญชีจำนวนมาก
+   - Enumeration / Scraping / API Abuse: ยิงขอข้อมูลถี่ ๆ เพื่อไล่ค่า ID/ดูดข้อมูล
+   - App-Layer DoS: ยิง endpoint หนัก ๆ จนทรัพยากรล้า
+5) เสนอวิธีป้องกันเพิ่มเติมที่ไม่ได้กล่าวใน Lab นี้
+   - CSRF Protection ใช้ anti-CSRF token + ตั้ง SameSite บนคุกกี้ (Lax/Strict) เพื่อกันการยิงคำขอข้ามโดเมน
+   - Least-Privilege & Secrets Hygiene แยกบัญชี Database ตามบริการและให้สิทธิ์เท่าที่จำเป็น
+
+---
+
 ## ภาคผนวก
 
 ### A. Screenshots หลักฐาน
@@ -561,11 +581,11 @@ app.get('/user/:id', authenticateJWT, async (req, res) => {
   res.json(rows[0]);
 });
 ```
-
 ### C. เอกสารอ้างอิง
 - OWASP Top 10: https://owasp.org/Top10/
 - Security Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
 - Lab Materials: [Lab 3 Readme.md](https://github.com/se-rmutl/ENGSE214/blob/main/Labs/lab3/README.md)
 - IDOR: https://www.facebook.com/share/p/1EmfMUCfrw/
+
 
 
